@@ -1,0 +1,29 @@
+import PyPDF2
+
+def merge_pdfs(input_files, output_file, watermark_file=None):
+    pdf_merger = PyPDF2.PdfMerger()
+
+    # Merge PDFs
+    for file in input_files:
+        with open(file, 'rb') as pdf_file:
+            pdf_merger.append(pdf_file)
+
+    # Add watermark if specified
+    if watermark_file:
+        with open(watermark_file, 'rb') as watermark:
+            watermark_pdf = PyPDF2.PdfFileReader(watermark)
+            watermark_page = watermark_pdf.getPage(0)
+            for page_num in range(pdf_merger.getNumPages()):
+                page = pdf_merger.getPage(page_num)
+                page.merge_page(watermark_page)
+
+    # Save the merged and watermarked PDF
+    with open(output_file, 'wb') as output:
+        pdf_merger.write(output)
+
+if __name__ == "__main__":
+    input_files = ['file1.pdf', 'file2.pdf']  # Replace with the paths of the PDF files to merge
+    output_file = 'merged.pdf'  # Replace with the desired name for the merged PDF
+    watermark_file = 'watermark.pdf'  # Replace with the path to the watermark PDF (optional)
+
+    merge_pdfs(input_files, output_file, watermark_file)
